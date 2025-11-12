@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Encuesta Años 80 - Despedida de Fin de Año</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="neon-background"></div> 
+    <header class="header">
+        <h1 class="main-title">🎵 ENCUESTA AÑOS 80 🎵</h1>
+        <p class="subtitle">¡Prepárate para la despedida de fin de año más retro!</p>
+    </header>
+
+    <main class="container">
+        <form id="encuestaForm" class="form-container">
+            <div class="form-section">
+                <h2>📝 Datos Personales</h2>
+                <div class="input-group">
+                    <label for="nombre">Nombre completo:</label>
+                    <input type="text" id="nombre" name="nombre" required>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>🎶 ¿Conoces estas canciones típicas de los años 80?</h2>
+                <p class="question-subtitle">Marca todas las que conozcas:</p>
+                <div class="checkbox-grid">
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Billie Jean - Michael Jackson">
+                        <span>🕺 Billie Jean - Michael Jackson</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Girls Just Want to Have Fun - Cyndi Lauper">
+                        <span>💃 Girls Just Want to Have Fun - Cyndi Lauper</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Sweet Dreams - Eurythmics">
+                        <span>✨ Sweet Dreams - Eurythmics</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Don't Stop Believin' - Journey">
+                        <span>🌟 Don't Stop Believin' - Journey</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Take On Me - A-ha">
+                        <span>🎸 Take On Me - A-ha</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Every Breath You Take - The Police">
+                        <span>👮 Every Breath You Take - The Police</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Like a Virgin - Madonna">
+                        <span>👑 Like a Virgin - Madonna</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Eye of the Tiger - Survivor">
+                        <span>🥊 Eye of the Tiger - Survivor</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Dancing Queen - ABBA">
+                        <span>👸 Dancing Queen - ABBA</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Livin' on a Prayer - Bon Jovi">
+                        <span>🙏 Livin' on a Prayer - Bon Jovi</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="I Wanna Dance with Somebody - Whitney Houston">
+                        <span>💖 I Wanna Dance with Somebody - Whitney Houston</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Total Eclipse of the Heart - Bonnie Tyler">
+                        <span>🌙 Total Eclipse of the Heart - Bonnie Tyler</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Beat It - Michael Jackson">
+                        <span>⚡ Beat It - Michael Jackson</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Material Girl - Madonna">
+                        <span>💎 Material Girl - Madonna</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Footloose - Kenny Loggins">
+                        <span>👟 Footloose - Kenny Loggins</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Another One Bites the Dust - Queen">
+                        <span>⚡ Another One Bites the Dust - Queen</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Flash Dance - Irene Cara">
+                        <span>🔥 Flash Dance - Irene Cara</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Purple Rain - Prince">
+                        <span>☔ Purple Rain - Prince</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Come On Eileen - Dexys Midnight Runners">
+                        <span>🎺 Come On Eileen - Dexys Midnight Runners</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" name="canciones_conocidas" value="Karma Chameleon - Culture Club">
+                        <span>🦎 Karma Chameleon - Culture Club</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <h2>💃 ¿Qué canción de los años 80 te gustaría escuchar y bailar en la despedida de fin de año? 🎶💃🕺</h2>
+                <p class="question-subtitle">Escribe el nombre de tu canción favorita de los años 80:</p>
+                <div class="input-group">
+                    <label for="cancion_bailar">Tu canción ideal para bailar:</label>
+                    <input type="text" id="cancion_bailar" name="cancion_bailar" 
+                           placeholder="Ej: Dancing Queen - ABBA, Billie Jean - Michael Jackson..." 
+                           required>
+                </div>
+                <div class="suggestions">
+                    <p class="suggestions-title">💡 Algunas sugerencias populares:</p>
+                    <div class="suggestions-grid">
+                        <span class="suggestion-tag">🕺 Billie Jean</span>
+                        <span class="suggestion-tag">💃 I Wanna Dance</span>
+                        <span class="suggestion-tag">🎸 Take On Me</span>
+                        <span class="suggestion-tag">👸 Dancing Queen</span>
+                        <span class="suggestion-tag">🔥 Maniac</span>
+                        <span class="suggestion-tag">⚡ Eye of the Tiger</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section creative-section">
+                <h2>🎭 ¡Momento Creativo!</h2>
+                <p class="question-subtitle">¡Imagínate en la fiesta más épica de los años 80! 🌟</p>
+                
+                <div class="creative-question">
+                    <label for="comentario">Si fueras el/la protagonista de una película de los años 80, ¿cuál sería tu entrada triunfal a la pista de baile? Describe tu look, tu actitud y ese momento épico donde todas las miradas se dirigen hacia ti... ✨🕺💃</label>
+                    <textarea id="comentario" name="comentario" placeholder="Ej: Entro con una chaqueta de cuero brillante, lentes de sol espejados, el cabello perfectamente despeinado al viento. Bajo las escaleras en cámara lenta mientras suena 'Ojo del Tigre', todos voltean a verme, lanzo los lentes al aire y... ¡la pista es mía! 🎬✨"></textarea>
+                </div>
+
+                <div class="inspiration-gallery">
+                    <p class="gallery-title">💡 Inspírate con estos íconos de los 80:</p>
+                    <div class="icon-grid">
+                        <div class="icon-item">🕺 John Travolta</div>
+                        <div class="icon-item">💃 Madonna</div>
+                        <div class="icon-item">🎸 David Bowie</div>
+                        <div class="icon-item">⭐ Michael Jackson</div>
+                        <div class="icon-item">👑 Prince</div>
+                        <div class="icon-item">💫 Cyndi Lauper</div>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn">🎉 Enviar Respuestas 🎉</button>
+        </form>
+
+        <div class="admin-access">
+            <button id="adminBtn" class="admin-btn">🔐 Panel de Administrador</button>
+        </div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="admin-panel hidden">
+        <div class="admin-content">
+            <h2>🔐 Acceso de Administrador</h2>
+            <button id="closeLogin" class="close-btn">❌</button>
+            <form id="loginForm" class="login-form">
+                <div class="input-group">
+                    <label for="adminUser">Usuario:</label>
+                    <input type="text" id="adminUser" required>
+                </div>
+                <div class="input-group">
+                    <label for="adminPass">Contraseña:</label>
+                    <input type="password" id="adminPass" required>
+                </div>
+                <button type="submit" class="submit-btn">🚀 Ingresar</button>
+            </form>
+            <div id="loginError" class="error-message hidden">
+                ❌ Credenciales incorrectas
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPanel" class="admin-panel hidden">
+        <div class="admin-content">
+            <h2>📊 Panel de Administrador</h2>
+            <button id="closeAdmin" class="close-btn">❌</button>
+            
+            <div class="admin-stats">
+                <div id="estadisticas" class="estadisticas-container">
+                    <!-- Estadísticas se cargarán aquí -->
+                </div>
+            </div>
+
+            <div class="admin-actions">
+                <button id="exportData" class="export-btn">📥 Exportar CSV</button>
+                <button id="exportPDF" class="export-btn pdf-btn">📄 Descargar PDF</button>
+            </div>
+
+            <div id="respuestas" class="respuestas-container">
+                <p>No hay respuestas aún.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
