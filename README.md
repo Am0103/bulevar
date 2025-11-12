@@ -1,4 +1,4 @@
-# 🎵 Encuesta Años 80 - Despedida de Fin de Año
+# 🎵 Encuesta Rock en Español de los 80s
 
 Una encuesta interactiva con temática de los años 80 para despedidas de fin de año.
 
@@ -32,11 +32,22 @@ bulevar/
 └── .gitignore          # Archivos ignorados por Git
 ```
 
-## 🔧 Instalación
+## 🛠️ Instalación
 
-1. Clona este repositorio
-2. Abre `index.html` en tu navegador
-3. ¡Listo para usar!
+1. **Instalar Node.js**: Descargar desde https://nodejs.org/
+
+2. **Instalar dependencias**:
+```bash
+cd c:\Users\Angel\OneDrive\Documentos\bulevar
+npm install
+```
+
+3. **Ejecutar el servidor**:
+```bash
+npm start
+```
+
+4. **Abrir la encuesta**: http://localhost:3000
 
 ## 🌐 Despliegue
 
@@ -48,8 +59,8 @@ El proyecto está optimizado para desplegarse en:
 
 ## 👤 Credenciales de Admin
 
-- **Usuario:** *****
-- **Contraseña:**"***
+- **Usuario:** admin
+- **Contraseña:** fiesta2025
 
 ## 🎉 Uso
 
