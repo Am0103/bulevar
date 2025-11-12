@@ -48,8 +48,8 @@ El proyecto está optimizado para desplegarse en:
 
 ## 👤 Credenciales de Admin
 
-- **Usuario:** admin
-- **Contraseña:** fiesta2025
+- **Usuario:** *****
+- **Contraseña:**"***
 
 ## 🎉 Uso
 
