@@ -134,3 +134,6 @@ if __name__ == '__main__':
     print(f"🌐 Puerto: {port}")
     print("🔐 Panel Admin: usuario: admin, contraseña: fiesta2025")
     app.run(debug=False, host='0.0.0.0', port=port)
+else:
+    # Para gunicorn
+    application = app
