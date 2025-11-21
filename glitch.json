@@ -1,0 +1,10 @@
+{
+  "install": "pip install -r requirements.txt",
+  "start": "python app.py",
+  "watch": {
+    "ignore": [
+      "\\.git",
+      "node_modules"
+    ]
+  }
+}

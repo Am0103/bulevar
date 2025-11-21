@@ -5,10 +5,23 @@ document.addEventListener('DOMContentLoaded', function() {
         password: 'fiesta2025'
     };
     
-    // Detectar si estamos en producción o desarrollo
-    const API_BASE = window.location.hostname === 'localhost' 
-        ? 'http://localhost:5000/api' 
-        : `${window.location.origin}/api`;
+    // Detectar el entorno automáticamente
+    let API_BASE;
+    const hostname = window.location.hostname;
+    
+    if (hostname.includes('replit') || hostname.includes('repl.co')) {
+        API_BASE = `${window.location.origin}/api`;
+        console.log('Detectado entorno Replit');
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        API_BASE = 'http://localhost:5000/api';
+        console.log('Detectado entorno local');
+    } else {
+        API_BASE = `${window.location.origin}/api`;
+        console.log('Detectado entorno de producción');
+    }
+    
+    console.log('API Base URL:', API_BASE);
+    console.log('Hostname actual:', hostname);
 
     // Array para almacenar las respuestas
     let respuestasEncuesta = [];
@@ -33,6 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar envío del formulario
     form.addEventListener('submit', function(e) {
         e.preventDefault();
+        console.log('Formulario enviado');
         
         const formData = new FormData(form);
         const respuesta = {
@@ -42,13 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
             comentario: formData.get('comentario')
         };
         
-        // Enviar a la API de Python
+        console.log('Datos a enviar:', respuesta);
         guardarEnAPI(respuesta);
     });
 
-    // Funciones de API
+    // Funciones de API con mejor manejo de errores
     async function guardarEnAPI(respuesta) {
         try {
+            console.log('Enviando a:', `${API_BASE}/guardar-respuesta`);
+            
             const response = await fetch(`${API_BASE}/guardar-respuesta`, {
                 method: 'POST',
                 headers: {
@@ -57,21 +73,31 @@ document.addEventListener('DOMContentLoaded', function() {
                 body: JSON.stringify(respuesta)
             });
             
+            console.log('Respuesta del servidor:', response.status);
+            
+            if (!response.ok) {
+                throw new Error(`Error del servidor: ${response.status}`);
+            }
+            
             const result = await response.json();
+            console.log('Resultado:', result);
             
             if (result.success) {
                 mostrarMensajeExito();
-                form.reset();
+                setTimeout(() => {
+                    form.reset();
+                }, 2000);
+                
                 // Recargar datos si el panel está abierto
                 if (!adminPanel.classList.contains('hidden')) {
                     cargarDatosDeAPI();
                 }
             } else {
-                mostrarError('Error al guardar la respuesta');
+                mostrarError(result.message || 'Error al guardar la respuesta');
             }
         } catch (error) {
-            console.error('Error:', error);
-            mostrarError('Error de conexión con el servidor Python');
+            console.error('Error completo:', error);
+            mostrarError(`Error de conexión: ${error.message}. Verifica que el servidor Python esté funcionando.`);
         }
     }
 
@@ -92,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function mostrarError(mensaje) {
+        console.error('Error:', mensaje);
         const error = document.createElement('div');
         error.innerHTML = `❌ ${mensaje}`;
         error.style.cssText = `
@@ -101,12 +128,14 @@ document.addEventListener('DOMContentLoaded', function() {
             transform: translate(-50%, -50%);
             background: #dc3545;
             color: white;
-            padding: 15px 20px;
+            padding: 20px;
             border-radius: 10px;
             text-align: center;
             font-weight: bold;
             z-index: 10000;
             animation: aparecer 0.3s ease-out;
+            max-width: 90%;
+            font-size: 1rem;
         `;
         
         document.body.appendChild(error);
@@ -114,7 +143,7 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => {
             error.style.animation = 'desaparecer 0.3s ease-out';
             setTimeout(() => error.remove(), 300);
-        }, 3000);
+        }, 5000);
     }
 
     // Funciones de guardado y carga
@@ -351,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
         `;
     }
 
-    // Exportar datos (ahora desde la API)
+    // Exportar datos
     exportDataBtn.addEventListener('click', async function() {
         try {
             await cargarDatosDeAPI();
@@ -361,15 +390,44 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            let csvContent = 'ID,Fecha,Nombre,Canciones Conocidas,Canción para Bailar,Comentario Creativo\n';
+            let csvContent = 'ID,Fecha Completa,Nombre,Cantidad Canciones Conocidas,Lista Completa Canciones Conocidas,Canción para Bailar,Historia Creativa Completa,Duración Historia (caracteres)\n';
             
             respuestasEncuesta.forEach(respuesta => {
                 const cancionesConocidas = Array.isArray(respuesta.canciones_conocidas) 
-                    ? respuesta.canciones_conocidas.join('; ') 
+                    ? respuesta.canciones_conocidas.join(' | ') 
                     : respuesta.canciones_conocidas;
-                const comentario = respuesta.comentario.replace(/"/g, '""').replace(/\n/g, ' ');
                 
-                csvContent += `${respuesta.id},"${respuesta.fecha}","${respuesta.nombre}","${cancionesConocidas}","${respuesta.cancion_bailar}","${comentario}"\n`;
+                const cantidadCanciones = Array.isArray(respuesta.canciones_conocidas) 
+                    ? respuesta.canciones_conocidas.length 
+                    : (respuesta.canciones_conocidas ? respuesta.canciones_conocidas.split(';').length : 0);
+                
+                const comentarioCompleto = respuesta.comentario ? respuesta.comentario.replace(/"/g, '""').replace(/\n/g, ' ') : 'Sin comentario';
+                const duracionComentario = respuesta.comentario ? respuesta.comentario.length : 0;
+                
+                csvContent += `"${respuesta.id}","${respuesta.fecha}","${respuesta.nombre}","${cantidadCanciones}","${cancionesConocidas}","${respuesta.cancion_bailar}","${comentarioCompleto}","${duracionComentario}"\n`;
+            });
+            
+            // Agregar resumen estadístico al final
+            csvContent += '\n\n=== RESUMEN ESTADÍSTICO ===\n';
+            csvContent += `Total de Participantes,${respuestasEncuesta.length}\n`;
+            csvContent += `Fecha de Exportación,"${new Date().toLocaleString('es-ES')}"\n`;
+            
+            // Canciones más populares
+            const cancionesMasConocidas = calcularCancionesMasConocidas();
+            csvContent += '\n=== TOP 10 CANCIONES MÁS CONOCIDAS ===\n';
+            csvContent += 'Posición,Canción,Número de Votos,Porcentaje\n';
+            cancionesMasConocidas.slice(0, 10).forEach((item, index) => {
+                const porcentaje = ((item.count / respuestasEncuesta.length) * 100).toFixed(1);
+                csvContent += `"${index + 1}","${item.cancion}","${item.count}","${porcentaje}%"\n`;
+            });
+            
+            // Canciones para bailar más deseadas
+            const cancionesMasDeseadas = calcularCancionesMasDeseadas();
+            csvContent += '\n=== TOP 10 CANCIONES MÁS DESEADAS PARA BAILAR ===\n';
+            csvContent += 'Posición,Canción,Número de Menciones,Porcentaje\n';
+            cancionesMasDeseadas.slice(0, 10).forEach((item, index) => {
+                const porcentaje = ((item.count / respuestasEncuesta.length) * 100).toFixed(1);
+                csvContent += `"${index + 1}","${item.cancion}","${item.count}","${porcentaje}%"\n`;
             });
             
             // Crear y descargar archivo CSV
@@ -377,7 +435,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const link = document.createElement('a');
             const url = URL.createObjectURL(blob);
             link.setAttribute('href', url);
-            link.setAttribute('download', `encuesta_rock_80s_${new Date().toISOString().split('T')[0]}.csv`);
+            link.setAttribute('download', `encuesta_rock_80s_completa_${new Date().toISOString().split('T')[0]}.csv`);
             link.style.visibility = 'hidden';
             document.body.appendChild(link);
             link.click();
@@ -388,48 +446,156 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // Exportar PDF
-    exportPDFBtn.addEventListener('click', function() {
-        if (respuestasEncuesta.length === 0) {
-            alert('No hay datos para exportar.');
-            return;
-        }
-        
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-        
-        // Configurar fuente
-        doc.setFont('helvetica');
-        
-        // Título
-        doc.setFontSize(20);
-        doc.text('🎵 Encuesta Rock en Español de los 80s', 20, 30);
-        
-        // Fecha del reporte
-        doc.setFontSize(12);
-        doc.text(`Reporte generado: ${new Date().toLocaleString('es-ES')}`, 20, 45);
-        doc.text(`Total de respuestas: ${respuestasEncuesta.length}`, 20, 55);
-        
-        let yPosition = 70;
-        
-        // Estadísticas
-        const cancionesMasConocidas = calcularCancionesMasConocidas();
-        doc.setFontSize(14);
-        doc.text('📊 Top 5 Canciones Más Conocidas:', 20, yPosition);
-        yPosition += 15;
-        
-        doc.setFontSize(10);
-        cancionesMasConocidas.slice(0, 5).forEach((item, index) => {
-            if (yPosition > 270) {
+    exportPDFBtn.addEventListener('click', async function() {
+        try {
+            await cargarDatosDeAPI();
+            
+            if (respuestasEncuesta.length === 0) {
+                alert('No hay datos para exportar.');
+                return;
+            }
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Configurar fuente
+            doc.setFont('helvetica');
+            
+            // Título
+            doc.setFontSize(18);
+            doc.text('🎵 REPORTE COMPLETO - ENCUESTA ROCK 80s', 20, 25);
+            
+            // Información general
+            doc.setFontSize(12);
+            doc.text(`Fecha del reporte: ${new Date().toLocaleString('es-ES')}`, 20, 40);
+            doc.text(`Total de participantes: ${respuestasEncuesta.length}`, 20, 50);
+            doc.text(`Promedio de canciones conocidas: ${calcularPromedioCanciones().toFixed(1)}`, 20, 60);
+            
+            let yPosition = 80;
+            
+            // Estadísticas generales
+            doc.setFontSize(14);
+            doc.text('📊 ESTADÍSTICAS GENERALES', 20, yPosition);
+            yPosition += 15;
+            
+            const cancionesMasConocidas = calcularCancionesMasConocidas();
+            const cancionesMasDeseadas = calcularCancionesMasDeseadas();
+            
+            doc.setFontSize(10);
+            doc.text(`Canción más conocida: ${cancionesMasConocidas[0]?.cancion || 'N/A'} (${cancionesMasConocidas[0]?.count || 0} votos)`, 20, yPosition);
+            yPosition += 8;
+            doc.text(`Canción más deseada para bailar: ${cancionesMasDeseadas[0]?.cancion || 'N/A'} (${cancionesMasDeseadas[0]?.count || 0} menciones)`, 20, yPosition);
+            yPosition += 15;
+            
+            // Top 10 canciones más conocidas
+            doc.setFontSize(12);
+            doc.text('🏆 TOP 10 CANCIONES MÁS CONOCIDAS', 20, yPosition);
+            yPosition += 10;
+            
+            doc.setFontSize(9);
+            cancionesMasConocidas.slice(0, 10).forEach((item, index) => {
+                if (yPosition > 270) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                const porcentaje = ((item.count / respuestasEncuesta.length) * 100).toFixed(1);
+                doc.text(`${index + 1}. ${item.cancion.substring(0, 60)}... (${item.count} votos - ${porcentaje}%)`, 25, yPosition);
+                yPosition += 7;
+            });
+            
+            yPosition += 10;
+            
+            // Detalles de cada participante
+            if (yPosition > 200) {
                 doc.addPage();
                 yPosition = 20;
             }
-            doc.text(`${index + 1}. ${item.cancion} (${item.count} votos)`, 25, yPosition);
-            yPosition += 8;
-        });
-        
-        // Descargar PDF
-        doc.save(`encuesta_rock_80s_reporte_${new Date().toISOString().split('T')[0]}.pdf`);
+            
+            doc.setFontSize(12);
+            doc.text('👥 DETALLE POR PARTICIPANTE', 20, yPosition);
+            yPosition += 15;
+            
+            respuestasEncuesta.forEach((respuesta, index) => {
+                if (yPosition > 250) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                
+                doc.setFontSize(10);
+                doc.text(`PARTICIPANTE ${index + 1}:`, 20, yPosition);
+                yPosition += 8;
+                
+                doc.setFontSize(9);
+                doc.text(`• Nombre: ${respuesta.nombre}`, 25, yPosition);
+                yPosition += 6;
+                doc.text(`• Fecha: ${respuesta.fecha}`, 25, yPosition);
+                yPosition += 6;
+                
+                const cantidadCanciones = Array.isArray(respuesta.canciones_conocidas) 
+                    ? respuesta.canciones_conocidas.length 
+                    : (respuesta.canciones_conocidas ? respuesta.canciones_conocidas.split(';').length : 0);
+                
+                doc.text(`• Canciones que conoce (${cantidadCanciones}):`, 25, yPosition);
+                yPosition += 6;
+                
+                const canciones = Array.isArray(respuesta.canciones_conocidas) 
+                    ? respuesta.canciones_conocidas 
+                    : respuesta.canciones_conocidas.split(';');
+                
+                canciones.slice(0, 8).forEach(cancion => {
+                    if (yPosition > 270) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.text(`  - ${cancion.trim().substring(0, 70)}`, 30, yPosition);
+                    yPosition += 5;
+                });
+                
+                if (canciones.length > 8) {
+                    doc.text(`  ... y ${canciones.length - 8} más`, 30, yPosition);
+                    yPosition += 5;
+                }
+                
+                doc.text(`• Canción para bailar: ${respuesta.cancion_bailar}`, 25, yPosition);
+                yPosition += 6;
+                
+                if (respuesta.comentario) {
+                    doc.text(`• Historia creativa:`, 25, yPosition);
+                    yPosition += 6;
+                    const comentarioCorto = respuesta.comentario.substring(0, 200);
+                    const lineasComentario = doc.splitTextToSize(comentarioCorto + '...', 160);
+                    lineasComentario.slice(0, 3).forEach(linea => {
+                        if (yPosition > 270) {
+                            doc.addPage();
+                            yPosition = 20;
+                        }
+                        doc.text(linea, 30, yPosition);
+                        yPosition += 5;
+                    });
+                }
+                
+                yPosition += 10;
+            });
+            
+            // Descargar PDF
+            doc.save(`encuesta_rock_80s_reporte_completo_${new Date().toISOString().split('T')[0]}.pdf`);
+        } catch (error) {
+            mostrarError('Error al exportar PDF');
+        }
     });
+
+    function calcularPromedioCanciones() {
+        if (respuestasEncuesta.length === 0) return 0;
+        
+        const totalCanciones = respuestasEncuesta.reduce((total, respuesta) => {
+            const cantidad = Array.isArray(respuesta.canciones_conocidas) 
+                ? respuesta.canciones_conocidas.length 
+                : (respuesta.canciones_conocidas ? respuesta.canciones_conocidas.split(';').length : 0);
+            return total + cantidad;
+        }, 0);
+        
+        return totalCanciones / respuestasEncuesta.length;
+    }
 
     // Cerrar modales al hacer clic fuera
     window.addEventListener('click', function(e) {

@@ -37,6 +37,7 @@ def guardar_respuesta():
         # Verificar si el archivo existe, si no, crear encabezados
         file_exists = os.path.isfile(CSV_FILE)
         
+        # Escribir al archivo CSV
         with open(CSV_FILE, 'a', newline='', encoding='utf-8') as csvfile:
             fieldnames = ['ID', 'Fecha', 'Nombre', 'Canciones Conocidas', 'Canción para Bailar', 'Comentario Creativo']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -53,11 +54,21 @@ def guardar_respuesta():
                 'Comentario Creativo': respuesta['comentario']
             })
         
+        # Enviar por email (opcional - para no perder datos)
+        enviar_respuesta_por_email(respuesta)
+        
         return jsonify({'success': True, 'message': 'Respuesta guardada exitosamente'})
     
     except Exception as e:
         print(f'Error: {e}')
         return jsonify({'success': False, 'message': 'Error al guardar respuesta'}), 500
+
+def enviar_respuesta_por_email(respuesta):
+    # Esta función enviaría los datos a tu email para backup
+    # Por ahora solo imprime en consola
+    print(f"📧 Nueva respuesta de: {respuesta['nombre']}")
+    print(f"🎵 Canción para bailar: {respuesta['cancion_bailar']}")
+    # En producción podrías usar SendGrid, Gmail API, etc.
 
 # API para obtener respuestas
 @app.route('/api/obtener-respuestas', methods=['GET'])
@@ -131,9 +142,11 @@ if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     print("🎵 Servidor de Encuesta Rock 80s iniciando...")
     print("📂 Los datos se guardan en: encuesta.csv")
-    print(f"🌐 Puerto: {port}")
+    print(f"🌐 Servidor corriendo en puerto: {port}")
     print("🔐 Panel Admin: usuario: admin, contraseña: fiesta2025")
-    app.run(debug=False, host='0.0.0.0', port=port)
+    
+    # Para Replit y otros servicios de hosting
+    app.run(host='0.0.0.0', port=port, debug=False)
 else:
     # Para gunicorn
     application = app
